@@ -1,0 +1,10 @@
+{
+	"id": "quote-of-the-day",
+	"name": "Quote of the Day",
+	"version": "0.1.0",
+	"minAppVersion": "0.12.0",
+	"description": "Inserts random quotes in the editor",
+	"author": "Florin Bobis",
+	"authorUrl": "https://florinbobis.com",
+	"isDesktopOnly": false
+}
