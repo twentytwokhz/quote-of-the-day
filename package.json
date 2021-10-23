@@ -1,20 +1,20 @@
 {
-    "name": "quote-of-the-day",
-    "version": "0.1.0",
-    "description": "Inserts random quotes in the editor",
-    "main": "main.js",
-    "scripts": {
-        "dev": "esbuild main.ts --bundle --external:obsidian --outdir=.  --target=es2016 --format=cjs --sourcemap=inline --watch",
-        "build": "esbuild main.ts --bundle --external:obsidian --outdir=.  --target=es2016 --format=cjs"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "MIT",
-    "devDependencies": {
-        "@types/node": "^16.11.1",
-        "esbuild": "0.13.8",
-        "obsidian": "^0.12.17",
-        "tslib": "2.3.1",
-        "typescript": "4.4.4"
-    }
+	"name": "quote-of-the-day",
+	"version": "0.1.1",
+	"description": "Inserts random quotes in the editor",
+	"main": "main.js",
+	"scripts": {
+		"dev": "esbuild main.ts --bundle --external:obsidian --outdir=.  --target=es2016 --format=cjs --sourcemap=inline --watch",
+		"build": "esbuild main.ts --bundle --external:obsidian --outdir=.  --target=es2016 --format=cjs"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^16.11.1",
+		"esbuild": "0.13.8",
+		"obsidian": "^0.12.17",
+		"tslib": "2.3.1",
+		"typescript": "4.4.4"
+	}
 }

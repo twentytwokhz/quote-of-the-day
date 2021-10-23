@@ -1,23 +1,54 @@
-import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting } from "obsidian";
+import {
+	App,
+	Editor,
+	MarkdownView,
+	Notice,
+	Plugin,
+	PluginSettingTab,
+	Setting,
+} from "obsidian";
 
 interface QotDSettings {
-	quoteApiUrl: string;
+	quoteFormat: string;
+	quoteTagFormat: string;
+	showTags: boolean;
 }
 
 interface QuoteOfDay {
-	text: string,
-	author: string
+	content: string;
+	author: string;
+	tags: Array<string>;
 }
 
+const QUOTE_API_URL = "https://api.quotable.io";
+
 const DEFAULT_SETTINGS: QotDSettings = {
-	quoteApiUrl: "https://type.fit/api/quotes",
+	quoteFormat: `> {content}
+>
+> &mdash; <cite>{author}</cite>✍️`,
+	quoteTagFormat: `>
+> ---
+> {tags}`,
+	showTags: false,
 };
 
 export default class QuoteOfTheDay extends Plugin {
 	settings: QotDSettings;
 
-	random_item = (data: Array<QuoteOfDay>) => {
-		return data[Math.floor(Math.random() * data.length)];
+	getMarkdownFromQuote = (qod: QuoteOfDay) => {
+		let text = this.settings.quoteFormat
+			.replace("{content}", qod.content)
+			.replace("{author}", qod.author);
+		if (this.settings.showTags) {
+			let tags = qod.tags.map((t) => `#${t}`).join(" ");
+			let quoteTags = this.settings.quoteTagFormat.replace(
+				"{tags}",
+				tags
+			);
+			text += `
+			${quoteTags}`;
+		}
+		return text;
 	};
 
 	async onload() {
@@ -26,26 +57,21 @@ export default class QuoteOfTheDay extends Plugin {
 		// This adds an editor command that can perform some operation on the current editor instance
 		this.addCommand({
 			id: "qotd-editor-command",
-			name: "Insert Quote of the Day",
+			name: "Insert Random Quote of the Day",
 			editorCallback: async (editor: Editor, view: MarkdownView) => {
-				let qod = {
-					text: 'Oops, I did it again 🙊',
-					author: 'Britney Error 😢'
+				let qod: QuoteOfDay = {
+					content: "Oops, I did it again 🙊",
+					author: "Britney Error 😢",
+					tags: ["error"],
 				};
-				try { 
-					let response = await fetch(this.settings.quoteApiUrl);
-					let data = await response.json();
-					
-					qod = this.random_item(data);
-				}
-				catch (err) {
+				try {
+					let response = await fetch(`${QUOTE_API_URL}/random`);
+					qod = await response.json();
+				} catch (err) {
 					console.log(err);
+					new Notice(err.message);
 				}
-				let text = `
-> ${qod.text}
->
-> &mdash; <cite>${qod.author}</cite>`;
-				editor.replaceSelection(text);
+				editor.replaceSelection(this.getMarkdownFromQuote(qod));
 			},
 			hotkeys: [
 				{
@@ -83,22 +109,69 @@ class QotDSettingsTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		let {containerEl} = this;
+		let { containerEl } = this;
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', {text: 'Quote of the Day Settings'});
+		containerEl.createEl("h2", { text: "Quote of the Day Settings" });
 
 		new Setting(containerEl)
-			.setName('Quote API URL')
-			.setDesc('URL of the quote API to use')
-			.addText(text => text
-				.setPlaceholder('Enter Quote API Url')
-				.setValue(this.plugin.settings.quoteApiUrl)
-				.onChange(async (value) => {
-					console.log('New Url: ' + value);
-					this.plugin.settings.quoteApiUrl = value;
-					await this.plugin.saveSettings();
-				}));
+			.setName("Quote Format")
+			.setDesc("Format the way the quote is displayed")
+			.addTextArea((text) => {
+				text.setPlaceholder("Quote format")
+					.setValue(this.plugin.settings.quoteFormat)
+					.onChange(async (value) => {
+						console.log("New Quote format: " + value);
+						//add quote format validation
+						let valid =
+							value.contains("{author}") &&
+							value.contains("{content}");
+						if (!valid) {
+							new Notice(
+								"Invalid format! Missing {author} or {content} field"
+							);
+							return;
+						}
+						this.plugin.settings.quoteFormat = value;
+						await this.plugin.saveSettings();
+					});
+				text.inputEl.setAttr("rows", 4);
+				text.inputEl.addClass("settings_area");
+			});
+
+		new Setting(containerEl)
+			.setName("Quote Tag Format")
+			.setDesc("Format the way the quote tags are displayed")
+			.addTextArea((text) => {
+				text.setPlaceholder("Quote tag format")
+					.setValue(this.plugin.settings.quoteTagFormat)
+					.onChange(async (value) => {
+						console.log("New Quote tag format: " + value);
+						//add tag format validation
+						let valid = value.contains("{tags}");
+						if (!valid) {
+							new Notice("Invalid format! Missing {tags} field");
+							return;
+						}
+						this.plugin.settings.quoteTagFormat = value;
+						await this.plugin.saveSettings();
+					});
+				text.inputEl.setAttr("rows", 4);
+				text.inputEl.addClass("settings_area");
+			});
+
+		new Setting(containerEl)
+			.setName("Show Quote Tags")
+			.setDesc("Display the quote tags")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.showTags)
+					.onChange(async (value) => {
+						console.log("New Show tags: " + value);
+						this.plugin.settings.showTags = value;
+						await this.plugin.saveSettings();
+					})
+			);
 	}
 }

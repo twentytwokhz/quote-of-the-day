@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/twentytwokhz/quote-of-the-day">
-    <img src="qotd.png" alt="Logo" height=100>
+    <img src="./qotd.png" alt="Logo" height=100>
   </a>
 
   <h3 align="center">Quote of the Day</h3>
@@ -19,9 +19,9 @@
 
 ## About The Project
 
-This plugin allows you to insert a famous quote in Markdown format. It is relying on an external API that can be changed via settings.
+This plugin allows you to insert a famous quote in Markdown format. It is relying on the [Quotable](https://github.com/lukePeavey/quotable) API.
 
-Courtesy to [Sergey Sokurenko](https://github.com/ssokurenko) for providing the default API with the quotes. Thank you!
+Courtesy to [Luke Peavey](https://github.com/lukePeavey) for providing this beautiful API for free. Thank you!
 
 ## Installing
 
@@ -33,21 +33,13 @@ Or, if you'd like to install it manually, clone this repository to the `.obsidia
 
 ## Options
 
-You can customize the source API from which the plugin retrieves the quotes.
-Currently it requires the response object to contain an `author` and a `text` property.
+The following setting are available:
 
-### Quote API Url
-
-This is the API URL from which the plugin will retrieve the list of quotes.
-
-`Expected quote format`
-
-```json
-{
-  "text": "lorem ipsum",
-  "author": "John Doe"
-}
-```
+| Setting          | Description                                                    |
+| ---------------- | -------------------------------------------------------------- |
+| Quote Format     | Format in which to display the quote                           |
+| Quote Tag Format | Format in which to display the tags in the footer of the quote |
+| Show Tags        | Toggle display of tags in the footer of the quote              |
 
 <!-- CONTRIBUTING -->
 
@@ -57,7 +49,7 @@ Contributions are what make the open source community such an amazing place to l
 
 ## License
 
-This project is licensed under the MIT License - see the [ `LICENSE` ](LICENSE) file for details
+This project is licensed under the MIT License - see the [`LICENSE`](LICENSE) file for details
 
 <!-- CONTACT -->
 
