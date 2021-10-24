@@ -21,6 +21,7 @@ interface QuoteOfDay {
 }
 
 const QUOTE_API_URL = "https://api.quotable.io";
+const MAX_TAG_CHARS = 25;
 
 const DEFAULT_SETTINGS: QotDSettings = {
 	quoteFormat: `> {content}
@@ -66,6 +67,60 @@ export default class QuoteOfTheDay extends Plugin {
 				};
 				try {
 					let response = await fetch(`${QUOTE_API_URL}/random`);
+					qod = await response.json();
+				} catch (err) {
+					console.log(err);
+					new Notice(err.message);
+				}
+				editor.replaceSelection(this.getMarkdownFromQuote(qod));
+			},
+			hotkeys: [
+				{
+					modifiers: ["Ctrl", "Shift"],
+					key: "Q",
+				},
+			],
+		});
+
+		this.addCommand({
+			id: "qotd-editor-command",
+			name: "Insert Random Quote of the Day by selected tag",
+			checkCallback: (checking: boolean) => {
+				// Conditions to check
+				let markdownView =
+					this.app.workspace.getActiveViewOfType(MarkdownView);
+				if (markdownView) {
+					// If checking is true, we're simply "checking" if the command can be run.
+					// If checking is false, then we want to actually perform the operation.
+					if (!checking) {
+						const sel = markdownView.editor.getSelection();
+						const validSelection = sel && sel.length > 2;
+						if (validSelection) {
+						}
+					}
+
+					// This command will only show up in Command Palette when the check function returns true
+					return true;
+				}
+
+				return true;
+			},
+			editorCallback: async (editor: Editor, view: MarkdownView) => {
+				let qod: QuoteOfDay = {
+					content: "Oops, cannot find that tag 🙊",
+					author: "Tag Error 😢",
+					tags: ["error"],
+				};
+				try {
+					const sel = editor.getSelection();
+					const validSelection = sel && sel.length > 2;
+					if (!validSelection) {
+						throw new Error("Invalid tag");
+					}
+					const tag = sel.substr(0, MAX_TAG_CHARS).trim();
+					let response = await fetch(
+						`${QUOTE_API_URL}/random?tags=${tag}`
+					);
 					qod = await response.json();
 				} catch (err) {
 					console.log(err);

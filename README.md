@@ -31,6 +31,12 @@ Or, if you'd like to install it manually, clone this repository to the `.obsidia
 
 <!-- USAGE EXAMPLES -->
 
+The default hotkeys are:
+
+| Hotkey                                                | Action                             |
+| ----------------------------------------------------- | ---------------------------------- |
+| <kbd>Ctrl/Cmd</kbd> + <kbd>Shift</kbd> + <kbd>Q</kbd> | **Insert Random Quote of the Day** |
+
 ## Options
 
 The following setting are available:
