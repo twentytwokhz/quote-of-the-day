@@ -15,6 +15,13 @@
   </p>
 </p>
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/twentytwokhz/quote-of-the-day)
+![GitHub Release Date](https://img.shields.io/github/release-date/twentytwokhz/quote-of-the-day)
+![GitHub issues](https://img.shields.io/github/issues/twentytwokhz/quote-of-the-day)
+
+![GitHub all releases](https://img.shields.io/github/downloads/twentytwokhz/quote-of-the-day/total)
+![GitHub](https://img.shields.io/github/license/twentytwokhz/quote-of-the-day)
+
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
