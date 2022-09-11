@@ -6,6 +6,7 @@ interface QotDSettings {
 	quoteTagFormat: string;
 	quoteTemplatePlaceholder: string;
 	showTags: boolean;
+	placeholderInterval: number;
 }
 
 interface QuoteOfDay {
@@ -24,10 +25,12 @@ const DEFAULT_SETTINGS: QotDSettings = {
 > {tags}`,
 	quoteTemplatePlaceholder: "{{qotd}}",
 	showTags: false,
+	placeholderInterval: 5,
 };
 
 export default class QuoteOfTheDay extends Plugin {
 	settings: QotDSettings;
+	started: boolean;
 
 	getMarkdownFromQuote = (qod: QuoteOfDay) => {
 		let text = this.settings.quoteFormat
@@ -44,16 +47,28 @@ export default class QuoteOfTheDay extends Plugin {
 		return text;
 	};
 
+	sleep = (delay: number) => {
+		return new Promise((resolve) => setTimeout(resolve, delay));
+	};
+
 	updateQuotePlaceholder = async () => {
 		//replace with what is needed
+		if (this.started) {
+			return;
+		}
+		this.started = true;
 		const file = this.app.workspace.getActiveFile();
 		let t = await this.app.vault.read(file);
-		if (t.contains(this.settings.quoteTemplatePlaceholder)) {
-			let qod = await this.getRandomQuote();
-			let quote = this.getMarkdownFromQuote(qod);
-			let s = t.replace(this.settings.quoteTemplatePlaceholder, quote);
-			this.app.vault.modify(file, s);
+		if (t.includes(this.settings.quoteTemplatePlaceholder)) {
+			while (t.search(this.settings.quoteTemplatePlaceholder) !== -1) {
+				await this.sleep(500);
+				let qod = await this.getRandomQuote();
+				let quote = this.getMarkdownFromQuote(qod);
+				t = t.replace(this.settings.quoteTemplatePlaceholder, quote);
+			}
+			this.app.vault.modify(file, t);
 		}
+		this.started = false;
 	};
 
 	getRandomQuote = async () => {
@@ -76,11 +91,15 @@ export default class QuoteOfTheDay extends Plugin {
 	};
 
 	async onload() {
+		console.log("Loading Quote of the Day plugin...");
 		await this.loadSettings();
 
 		// highlight-start
 		this.registerInterval(
-			window.setInterval(() => this.updateQuotePlaceholder(), 5000)
+			window.setInterval(
+				() => this.updateQuotePlaceholder(),
+				this.settings.placeholderInterval * 1000
+			)
 		);
 
 		// This adds an editor command that can perform some operation on the current editor instance
@@ -150,12 +169,7 @@ export default class QuoteOfTheDay extends Plugin {
 		this.addSettingTab(new QotDSettingsTab(this.app, this));
 	}
 
-	onunload() {
-		// Unhook the 'change' event
-		this.app.workspace.iterateCodeMirrors((cm) => {
-			cm.off("change", this.onChange);
-		});
-	}
+	onunload() {}
 
 	async loadSettings() {
 		this.settings = Object.assign(
