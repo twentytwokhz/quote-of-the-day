@@ -89,5 +89,22 @@ export default class QotDSettingsTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
+
+		new Setting(containerEl)
+			.setName("Quote Placeholder Interval")
+			.setDesc(
+				"Interval to check for quote placeholder presence and quote generation"
+			)
+			.addSlider((toggle) =>
+				toggle
+					.setLimits(5, 60, 1)
+					.setValue(this.plugin.settings.placeholderInterval)
+					.onChange(async (value) => {
+						console.log("New placeholderInterval: " + value);
+						this.plugin.settings.placeholderInterval = value;
+						await this.plugin.saveSettings();
+					})
+					.setDynamicTooltip()
+			);
 	}
 }
