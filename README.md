@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/twentytwokhz/quote-of-the-day">
-    <img src="./qotd.png" alt="Logo" height=100>
+    <img src="qotd.png" alt="Logo" height=100>
   </a>
 
   <h3 align="center">Quote of the Day</h3>
@@ -30,6 +30,15 @@ Find this plugin in the listing of community plugins in Obsidian and add it to y
 Or, if you'd like to install it manually, clone this repository to the `.obsidian/plugins/` directory in your vault, navigate to your newly cloned folder, run `npm i` or `yarn` to install dependencies, and run `npm run build` or `yarn build` to compile the plugin.
 
 <!-- USAGE EXAMPLES -->
+
+The default hotkeys are:
+
+| Hotkey                                                | Action                                       |
+| ----------------------------------------------------- | -------------------------------------------- |
+| <kbd>Ctrl/Cmd</kbd> + <kbd>Shift</kbd> + <kbd>Q</kbd> | **Insert Random Quote of the Day**           |
+| <kbd>Ctrl/Cmd</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd> | **Insert Tag-based Random Quote of the Day** |
+
+**Templates** are supported by using the `{{quote-of-the-day}}`
 
 ## Options
 
