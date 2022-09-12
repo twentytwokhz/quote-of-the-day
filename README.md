@@ -3,7 +3,7 @@
     <img src="qotd.png" alt="Logo" height=100>
   </a>
 
-  <h3 align="center">Quote of the Day</h3>
+  <h1 align="center">Quote of the Day</h1>
 
   <p align="center">
     An Obsidian plugin to insert random quotes as Markdown.
