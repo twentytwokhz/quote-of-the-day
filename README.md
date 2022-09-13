@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/twentytwokhz/quote-of-the-day">
-    <img src="https://github.com/twentytwokhz/quote-of-the-day/blob/master/qotd.png" alt="Logo" height=100>
+    <img src="https://github.com/twentytwokhz/quote-of-the-day/raw/master/qotd.png" alt="Logo" height=100>
   </a>
 
   <h1 align="center">Quote of the Day</h1>
