@@ -76,6 +76,21 @@ export default class QotDSettingsTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					});
 			});
+		
+		new Setting(containerEl)
+			.setName("Filtered Quote Template Placeholder")
+			.setDesc(
+				"Format the way the filtered quote placeholder is used when creating a note from template"
+			)
+			.addText((text) => {
+				text.setPlaceholder("Filtered Quote Template Placeholder")
+					.setValue(this.plugin.settings.filteredQuoteTemplatePlaceholder)
+					.onChange(async (value) => {
+						console.log("New Filtered Quote template placeholder: " + value);
+						this.plugin.settings.filteredQuoteTemplatePlaceholder = value;
+						await this.plugin.saveSettings();
+					});
+			});
 
 		new Setting(containerEl)
 			.setName("Show Quote Tags")
@@ -86,6 +101,19 @@ export default class QotDSettingsTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						console.log("New Show tags: " + value);
 						this.plugin.settings.showTags = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Show Quote Tags Hashtag")
+			.setDesc("Display the quote tags with # symbol")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.showTagHash)
+					.onChange(async (value) => {
+						//console.log("New Show tags: " + value);
+						this.plugin.settings.showTagHash = value;
 						await this.plugin.saveSettings();
 					})
 			);
@@ -106,5 +134,107 @@ export default class QotDSettingsTab extends PluginSettingTab {
 					})
 					.setDynamicTooltip()
 			);
+
+		const { moment } = window;
+		const filters = filtersList;
+		
+		let dd = new Setting(this.containerEl)
+			.setName("Quote of the Day Filters")
+			.setDesc("Current filter: " + this.plugin.getFilters(" , "))
+			.addDropdown((dropdown) => {
+			  	dropdown.addOption("None", "None");
+				filters.forEach((filter, i) => {
+					dropdown.addOption(filters[i], filter);
+				});
+				//dropdown.setValue(this.plugin.settings.filter2);
+				dropdown.onChange((val) => {
+					if (val == "None") {
+						this.plugin.settings.filter = ["None"];
+					}
+					else
+					{
+						if (this.plugin.settings.filter.includes(val)) {
+							this.plugin.settings.filter =
+							this.plugin.settings.filter.filter((i) => i !== val);
+						} else {
+							this.plugin.settings.filter.push(val);
+						}
+					}
+	  
+				  console.log(this.plugin.settings.filter);
+				  dd.setDesc("Current filter: " + this.plugin.getFilters(" , "))
+				  this.plugin.saveSettings();
+				});
+				dropdown.selectEl.setAttr("multiple", null);
+			});
 	}
 }
+
+const filtersList = [
+	"Age",
+	"Athletics",
+	"Business",
+	"Change",
+	"Character",
+	"Competition",
+	"Conservative",
+	"Courage",
+	"Creativity",
+	"Education",
+	"Ethics",
+	"Failure",
+	"Faith",
+	"Family",
+	"Famous Quotes",
+	"Film",
+	"Freedom",
+	"Friendship",
+	"Future",
+	"Generosity",
+	"Genius",
+	"Gratitude",
+	"Happiness",
+	"Health",
+	"History",
+	"Honor",
+	"Humor",
+	"Humorous",
+	"Imagination",
+	"Inspirational",
+	"Knowledge",
+	"Leadership",
+	"Life",
+	"Literature",
+	"Love",
+	"Mathematics",
+	"Motivational",
+	"Nature",
+	"Opportunity",
+	"Pain",
+	"Perseverance",
+	"Philosophy",
+	"Politics",
+	"Power Quotes",
+	"Proverb",
+	"Religion",
+	"Sadness",
+	"Science",
+	"Self",
+	"Self Help",
+	"Social Justice",
+	"Society",
+	"Spirituality",
+	"Sports",
+	"Stupidity",
+	"Success",
+	"Technology",
+	"Time",
+	"Tolerance",
+	"Truth",
+	"Virtue",
+	"War",
+	"Weakness",
+	"Wellness",
+	"Wisdom",
+	"Work"
+]

@@ -5,7 +5,10 @@ interface QotDSettings {
 	quoteFormat: string;
 	quoteTagFormat: string;
 	quoteTemplatePlaceholder: string;
+	filteredQuoteTemplatePlaceholder: string;
+	filter: Array<string>;
 	showTags: boolean;
+	showTagHash: boolean;
 	placeholderInterval: number;
 }
 
@@ -19,13 +22,18 @@ const QUOTE_API_URL = "https://api.quotable.io";
 const MAX_TAG_CHARS = 25;
 
 const DEFAULT_SETTINGS: QotDSettings = {
-	quoteFormat: `> {content}
+	quoteFormat: `>[!quote] Quote of the Day
+	> {content}
 > &mdash; <cite>{author}</cite>✍️`,
 	quoteTagFormat: `> ---
-> {tags}`,
+> {tags}
+`,
 	quoteTemplatePlaceholder: "{{qotd}}",
+	filteredQuoteTemplatePlaceholder: "{{fqotd}}",
 	showTags: false,
+	showTagHash: true,
 	placeholderInterval: 5,
+	filter: [],
 };
 
 export default class QuoteOfTheDay extends Plugin {
@@ -37,7 +45,13 @@ export default class QuoteOfTheDay extends Plugin {
 			.replace("{content}", qod.content)
 			.replace("{author}", qod.author);
 		if (this.settings.showTags) {
-			let tags = qod.tags.map((t) => `#${t}`).join(" ");
+			let tagSymb = "";
+			if (this.settings.showTagHash)
+			{
+				tagSymb = "#"
+			}
+			let tags = qod.tags.map((t) => `${tagSymb}${t}`).join(", ");
+			
 			let quoteTags = this.settings.quoteTagFormat.replace(
 				"{tags}",
 				tags
@@ -68,6 +82,15 @@ export default class QuoteOfTheDay extends Plugin {
 			}
 			this.app.vault.modify(file, t);
 		}
+		if (t.includes(this.settings.filteredQuoteTemplatePlaceholder)) {
+			while (t.search(this.settings.filteredQuoteTemplatePlaceholder) !== -1) {
+				await this.sleep(500);
+				let qod = await this.getFilteredQuote();
+				let quote = this.getMarkdownFromQuote(qod);
+				t = t.replace(this.settings.filteredQuoteTemplatePlaceholder, quote);
+			}
+			this.app.vault.modify(file, t);
+		}
 		this.started = false;
 	};
 
@@ -89,6 +112,31 @@ export default class QuoteOfTheDay extends Plugin {
 		}
 		return qod;
 	};
+
+	getFilteredQuote = async () => {
+		let qod: QuoteOfDay = {
+			content: "Oops, I did it again 🙊",
+			author: "Britney Error 😢",
+			tags: ["error"],
+		};
+		try {
+			let filters = this.getFilters("|");
+			let response = await fetch(`${QUOTE_API_URL}/random?tags=${filters}`);
+			let result = await response.json();
+			if (!result.statusCode) {
+				qod = result;
+			}
+		} catch (err) {
+			console.log(err);
+			new Notice(err.message);
+		}
+		return qod;
+	};
+
+	getFilters = (sep: string) => {
+		let f = this.settings.filter.filter((i) => i !== "None");
+		return f.join(sep);
+	}
 
 	async onload() {
 		console.log("Loading Quote of the Day plugin...");
