@@ -13,9 +13,9 @@ interface QotDSettings {
 }
 
 interface QuoteOfDay {
-	content: string;
+	quoteText: string;
 	author: string;
-	tags: Array<string>;
+	categories: string;
 }
 
 const QUOTE_API_URL = "https://florinbobis-quotes-net.hf.space/quotes";
@@ -42,7 +42,7 @@ export default class QuoteOfTheDay extends Plugin {
 
 	getMarkdownFromQuote = (qod: QuoteOfDay) => {
 		let text = this.settings.quoteFormat
-			.replace("{content}", qod.content)
+			.replace("{content}", qod.quoteText)
 			.replace("{author}", qod.author);
 		if (this.settings.showTags) {
 			let tagSymb = "";
@@ -50,7 +50,10 @@ export default class QuoteOfTheDay extends Plugin {
 			{
 				tagSymb = "#"
 			}
-			let tags = qod.tags.map((t) => `${tagSymb}${t}`).join(", ");
+			let tags = "";
+			if (qod.categories) {
+				tags = qod.categories.split(",").map((t) => `${tagSymb}${t}`).join(", ");
+			}
 			
 			let quoteTags = this.settings.quoteTagFormat.replace(
 				"{tags}",
@@ -96,9 +99,9 @@ export default class QuoteOfTheDay extends Plugin {
 
 	getRandomQuote = async () => {
 		let qod: QuoteOfDay = {
-			content: "Oops, I did it again 🙊",
+			quoteText: "Oops, I did it again 🙊",
 			author: "Britney Error 😢",
-			tags: ["error"],
+			categories: "error",
 		};
 		try {
 			let response = await fetch(`${QUOTE_API_URL}/random`);
@@ -115,9 +118,9 @@ export default class QuoteOfTheDay extends Plugin {
 
 	getFilteredQuote = async () => {
 		let qod: QuoteOfDay = {
-			content: "Oops, I did it again 🙊",
+			quoteText: "Oops, I did it again 🙊",
 			author: "Britney Error 😢",
-			tags: ["error"],
+			categories: "error",
 		};
 		try {
 			let filters = this.getFilters("|");
@@ -186,9 +189,9 @@ export default class QuoteOfTheDay extends Plugin {
 			},
 			editorCallback: async (editor: Editor, view: MarkdownView) => {
 				let qod: QuoteOfDay = {
-					content: "Oops, cannot find that tag 🙊",
+					quoteText: "Oops, cannot find that tag 🙊",
 					author: "Tag Error 😢",
-					tags: ["error"],
+					categories: "error",
 				};
 				try {
 					const sel = editor.getSelection();
