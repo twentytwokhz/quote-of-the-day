@@ -1,6 +1,6 @@
 {
 	"name": "quote-of-the-day",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "Inserts random quotes in the editor",
 	"main": "main.js",
 	"scripts": {

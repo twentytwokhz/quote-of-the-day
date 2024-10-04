@@ -18,7 +18,7 @@ interface QuoteOfDay {
 	tags: Array<string>;
 }
 
-const QUOTE_API_URL = "https://api.quotable.io";
+const QUOTE_API_URL = "https://florinbobis-quotes-net.hf.space";
 const MAX_TAG_CHARS = 25;
 
 const DEFAULT_SETTINGS: QotDSettings = {
