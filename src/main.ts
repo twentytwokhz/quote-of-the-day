@@ -104,7 +104,7 @@ export default class QuoteOfTheDay extends Plugin {
 			categories: "error",
 		};
 		try {
-			let response = await fetch(`${QUOTE_API_URL}/random`);
+			let response = await fetch(`${QUOTE_API_URL}/random?dataset=quotable`);
 			let result = await response.json();
 			if (!result.statusCode) {
 				qod = result;
@@ -124,7 +124,7 @@ export default class QuoteOfTheDay extends Plugin {
 		};
 		try {
 			let filters = this.getFilters("|");
-			let response = await fetch(`${QUOTE_API_URL}/random?tags=${filters}`);
+			let response = await fetch(`${QUOTE_API_URL}/random?dataset=quotable&tags=${filters}`);
 			let result = await response.json();
 			if (!result.statusCode) {
 				qod = result;
